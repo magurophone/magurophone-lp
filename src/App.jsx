@@ -523,9 +523,13 @@ function App() {
         'N/A',
         'NA'
       ])
+      const isOnlySymbols = /^[\p{P}\p{S}\s]+$/u
       const hasSpecial =
         hasRight(specialValue) ||
-        (normalizedSpecial !== '' && !specialFalseTokens.has(normalizedSpecial) && !specialFalseTokens.has(specialValue))
+        (normalizedSpecial !== '' &&
+          !specialFalseTokens.has(normalizedSpecial) &&
+          !specialFalseTokens.has(specialValue) &&
+          !isOnlySymbols.test(specialValue))
 
       if (
         !name ||
