@@ -490,10 +490,8 @@ function App() {
   // 検索フィルター（useMemoで最適化）
   const filteredRights = useMemo(() => {
     return sortedRights.filter(person => {
-      const name = String(person[RIGHTS_FIELDS.NAME] ?? '')
-      if (!name.toLowerCase().includes(searchTerm.toLowerCase())) {
-        return false
-      }
+      const name = String(person[RIGHTS_FIELDS.NAME] ?? '').trim()
+      const normalizedSearch = searchTerm.toLowerCase()
 
       const hasAnyRight = [
         RIGHTS_FIELDS.SONG_REQUEST_5K,
@@ -505,14 +503,22 @@ function App() {
         RIGHTS_FIELDS.MEMBERSHIP
       ].some(field => hasRight(person[field]))
 
-const specialValue = String(person[RIGHTS_FIELDS.SPECIAL] ?? '').trim()
-const normalizedSpecial = specialValue.toUpperCase()
-const hasSpecial =
-  normalizedSpecial !== '' &&
-  normalizedSpecial !== 'FALSE' &&
-  normalizedSpecial !== '0'
+      const specialValue = String(person[RIGHTS_FIELDS.SPECIAL] ?? '').trim()
+      const normalizedSpecial = specialValue.toUpperCase()
+      const specialFalseTokens = new Set(['', 'FALSE', '0', 'なし', '無し', '無', '-', '—', 'N/A', 'NA'])
+      const hasSpecial =
+        hasRight(specialValue) ||
+        (normalizedSpecial !== '' && !specialFalseTokens.has(normalizedSpecial) && !specialFalseTokens.has(specialValue))
 
-      return hasAnyRight || hasSpecial
+      if (
+        !name ||
+        !name.toLowerCase().includes(normalizedSearch) ||
+        (!hasAnyRight && !hasSpecial)
+      ) {
+        return false
+      }
+
+      return true
     })
   }, [sortedRights, searchTerm, hasRight])
 
