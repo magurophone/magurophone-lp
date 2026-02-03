@@ -505,7 +505,24 @@ function App() {
 
       const specialValue = String(person[RIGHTS_FIELDS.SPECIAL] ?? '').trim()
       const normalizedSpecial = specialValue.toUpperCase()
-      const specialFalseTokens = new Set(['', 'FALSE', '0', 'なし', '無し', '無', '-', '—', 'N/A', 'NA'])
+      const specialFalseTokens = new Set([
+        '',
+        'FALSE',
+        '0',
+        'なし',
+        '無し',
+        '無',
+        '-',
+        'ー',
+        '－',
+        '―',
+        '—',
+        '–',
+        '−',
+        '・',
+        'N/A',
+        'NA'
+      ])
       const hasSpecial =
         hasRight(specialValue) ||
         (normalizedSpecial !== '' && !specialFalseTokens.has(normalizedSpecial) && !specialFalseTokens.has(specialValue))
